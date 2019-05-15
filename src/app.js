@@ -1,49 +1,32 @@
 const express = require("express");
-const bodyParser = require('body-parser');
-const auth = require('./middleware/auth.js');
+const bodyParser = require("body-parser");
+const auth = require("./middleware/auth.js");
+const { decodeTransactionsData } = require("./utils/transaction-decode.js");
 
 const app = express();
 
-app.use(bodyParser.raw({
-    type: 'application/octet-stream',
-    limit: '10mb',
-}));
+app.use(
+    bodyParser.raw({
+        type: "application/octet-stream",
+        limit: "10mb"
+    })
+);
 
 app.post("/api/v1/process", auth, (req, res) => {
+    // TODO (test) (delete in future)
+    const frameSize = 128;
+    const offsets = {
+        sender: 0,
+        receiver: 40,
+        amount: 80,
+        timestamp: 120
+    };
+
     try {
-        // // #1
-        // let buffer = req.body;
-        // let decodedBuffer = buffer.toString('utf8');
-        // res.send({result: decodedBuffer});
+        const buffer = req.body;
+        const decodedData = decodeTransactionsData(buffer, frameSize, offsets);
 
-
-        // // #2 (get bytes)
-        // let buffer = req.body;
-        // let bufArray = [];
-        // for (const byt of buffer.values()) {
-        //     bufArray.push(byt);
-        // }
-        // res.send({result: bufArray});
-
-
-        // // #3 (get Buffer length in bytes)
-        // let buffer = req.body;
-        // res.send({result: buffer.length});
-
-
-        // // #4
-        // let buffer = req.body;
-        // let sender1 = buffer.toString('utf8', 0, 6);
-        // let receiver1 = buffer.toString('utf8', 6, 16);
-        // res.send({sender1, receiver1});
-
-
-        // #5
-        let buf = req.body;
-        let test = buf.readIntBE();
-
-        res.send({result: test});
-
+        res.send({ result: decodedData });
     } catch (err) {
         res.status(400).send(err);
     }

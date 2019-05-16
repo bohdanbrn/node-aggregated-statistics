@@ -2,6 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const auth = require("./middleware/auth.js");
 const { decodeTransactionsData } = require("./utils/transaction-decode.js");
+const testEnvConf = require("./utils/test-env-conf.js");
+
+const environment = process.env.NODE_ENV;
+const defaultConf = require("../config/default.json");
+const envConf = require(`../config/${environment}.json`);
+const mainConf = {...defaultConf, ...envConf};
+
+// configuration validation
+testEnvConf(mainConf);
 
 const app = express();
 
@@ -13,18 +22,9 @@ app.use(
 );
 
 app.post("/api/v1/process", auth, (req, res) => {
-    // TODO (test) (delete in future)
-    const frameSize = 128;
-    const offsets = {
-        sender: 0,
-        receiver: 40,
-        amount: 80,
-        timestamp: 120
-    };
-
     try {
         const buffer = req.body;
-        const decodedData = decodeTransactionsData(buffer, frameSize, offsets);
+        const decodedData = decodeTransactionsData(buffer, mainConf.frameSize, mainConf.offset);
 
         res.send({ result: decodedData });
     } catch (err) {

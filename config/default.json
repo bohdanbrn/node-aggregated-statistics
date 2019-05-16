@@ -1,0 +1,9 @@
+{
+    "frameSize": 128,
+    "offset": {
+        "sender": 0,
+        "receiver": 32,
+        "amount": 72,
+        "timestamp": 80
+    }
+}

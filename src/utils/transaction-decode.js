@@ -26,14 +26,12 @@ function decodeTransactionsData(buffer, frameSize, offsets) {
             frameStart += frameSize;
             frameEnd += frameSize;
         }
-
     } else {
-        throw Error("Invalid transactions data");
+        throw new Error("Invalid transactions data");
     }
 
     return result;
 }
-
 
 /**
  * Decode transaction information

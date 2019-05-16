@@ -1,3 +1,7 @@
+/**
+ * Configuration validation
+ * @param {object} envConf
+ */
 function testEnvConf(envConf) {
     // check fields type
     if (typeof envConf.frameSize !== "number") {
